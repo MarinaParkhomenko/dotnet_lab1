@@ -37,7 +37,7 @@ namespace lab1
             subjects.Add(subject);
         }
 
-        private void Display(IEnumerable<object> obj)
+        public void Display(IEnumerable<object> obj)
         {
             foreach (object objItem in obj) Console.WriteLine(objItem);
         }
@@ -60,6 +60,14 @@ namespace lab1
         {
             Display(subjects.OrderBy(elem=>elem.Name));
         }
+        public void DisplaySubByAmHours()
+        {
+            Display(subjects.OrderBy(elem => elem.Hours));
+        }
+        public void DisplaySubByCourse()
+        {
+            Display(subjects.OrderBy(elem => elem.Course));
+        }
         public void FindSubByTeachName(string teach)
         {
             Display(subjects.Where(elem => elem.Teacher == teach));
@@ -67,6 +75,81 @@ namespace lab1
         public void FindSubBySpecCode(int spec)
         {
             Display(subjects.Where(elem => elem.CodeOfSp == spec));
+        }
+
+        public void FindSubInRangeHours(int min, int max)
+        {
+            Display(subjects.Where(elem => elem.Hours >= min && elem.Hours <= max).OrderBy(elem => elem.Hours));
+        }
+        public void FindSubByCouese(int course)
+        {
+            Display(subjects.Where(elem => elem.Course == course));
+        }
+        public void FindSubBySkipping(int hours)
+        {
+            Display(subjects.OrderBy(elem => elem.Hours).SkipWhile(elem => (elem.Hours <= hours)));
+        }
+        public void SubectTeacherColl()
+        {
+            Display(
+                from sub in subjects
+                join teach in teachers
+                on sub.Teacher equals teach.Name
+                select new
+                {
+                    SubjectName = sub.Name, 
+                    TeacherName = teach.Name
+                }
+                ) ;
+        }
+        public void SubectTeacherSpColl()
+        {
+            Display(
+                from sub in subjects
+                join teach in teachers
+                on sub.Teacher equals teach.Name
+                join sp in specialties
+                on sub.CodeOfSp equals sp.Code
+                select new
+                {
+                    SubjectName = sub.Name,
+                    TeacherName = teach.Name,
+                    SpecailtyName = sp.Name
+                }
+                );
+        }
+
+        public void DisplayGroup(IEnumerable<IGrouping<object, Subject>> group)
+        {
+            foreach (IGrouping<object, Subject> gr in group)
+            {
+                Console.WriteLine(gr.Key);
+                foreach (var item in gr)
+                {
+                    Console.WriteLine(item);
+                }
+                Console.WriteLine();
+            }
+        }
+
+        public void GroupByTeacher()
+        {
+            DisplayGroup
+                (
+                from elem in subjects
+                orderby elem.Name
+                group elem by elem.Teacher
+                );
+        }
+
+        public void GroupByFormOfCon()
+        {
+            DisplayGroup
+                (
+                from elem in subjects
+                orderby elem.Name
+                group elem by elem.FormOfControl
+                );
         }
     }
 }
